@@ -19,7 +19,7 @@ migrate = Migrate(app, db)
 '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}}, supports_credentials=True)
 
 '''
   @TODO: Use the after_request decorator to set Access-Control-Allow

@@ -1,5 +1,6 @@
+import sys
 from flaskr import app
-from flask import jsonify, request
+from flask import jsonify, request, abort
 from flaskr.utilities import Utility
 from flaskr.models.question import Question
 from flaskr.models.category import Category
@@ -23,3 +24,61 @@ def question_listing():
         'categories': formated_categories,
         'current_category': 'null'
     }), 200
+
+
+@app.route('/api/v1/questions/<int:question_id>', methods=['DELETE'])
+def delete_question(question_id):
+    question = Question.query.get(question_id)
+
+    if not question:
+        return abort(404)
+
+    try:
+        question.delete()
+        return jsonify({
+            'success': True,
+            'message': 'question successfuly deleted'
+        }), 200
+    except:
+        return abort(400)
+
+
+@app.route('/api/v1/questions', methods=['POST'])
+def create_question():
+    question = request.json.get('question', None)
+    answer = request.json.get('answer', None)
+    category = request.json.get('category', None)
+    difficulty = request.json.get('difficulty', None)
+    searchTerm = request.json.get('searchTerm', None)
+
+    if searchTerm:
+        questions = Question.query.filter(
+            Question.question.ilike("%{}%".format(searchTerm))).all()
+
+        formated_questions = [question.format() for question in questions]
+
+        return jsonify({
+            'questions': formated_questions,
+            'totalQuestions': len(questions),
+            'currentCategory': 'null'
+        })
+
+    if question and answer and category and difficulty:
+        question = Question(
+            question=question,
+            answer=answer,
+            category_id=category,
+            difficulty=difficulty
+        )
+    else:
+        abort(400)
+
+    try:
+        question.insert()
+        return jsonify({
+            'success': True,
+            'message': 'question successfuly added'
+        })
+    except:
+        print(sys.exc_info())
+        abort(422)
