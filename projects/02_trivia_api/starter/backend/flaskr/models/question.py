@@ -11,13 +11,13 @@ class Question(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   question = db.Column(db.String)
   answer = db.Column(db.String)
-  category = db.Column(db.String)
+  category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
   difficulty = db.Column(db.Integer)
 
-  def __init__(self, question, answer, category, difficulty):
+  def __init__(self, question, answer, category_id, difficulty):
     self.question = question
     self.answer = answer
-    self.category = category
+    self.category_id = category_id
     self.difficulty = difficulty
 
   def insert(self):
@@ -36,6 +36,6 @@ class Question(db.Model):
       'id': self.id,
       'question': self.question,
       'answer': self.answer,
-      'category': self.category,
+      'category_id': self.category_id,
       'difficulty': self.difficulty
     }
