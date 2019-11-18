@@ -1,5 +1,7 @@
 import sys
+import random
 from flaskr import app
+from sqlalchemy import and_
 from flask import jsonify, request, abort
 from flaskr.utilities import Utility
 from flaskr.models.question import Question
@@ -82,3 +84,29 @@ def create_question():
     except:
         print(sys.exc_info())
         abort(422)
+
+
+@app.route('/api/v1/quizzes', methods=['POST'])
+def quiz():
+    previous_questions = request.json.get('previous_questions', None)
+    quiz_category = request.json.get('quiz_category', None)
+
+    if previous_questions is not None and quiz_category is not None:
+        questions = Question.query.filter(and_(
+            Question.id.notin_(previous_questions),
+            Question.category_id == quiz_category['id']
+        )).all()
+
+        if len(questions) > 0:
+            formated_questions = [question.format() for question in questions]
+            quiz_question = random.choice(formated_questions)
+
+            return jsonify({
+                'success': True,
+                'question': quiz_question
+            })
+        return jsonify({
+            'success': True
+        })
+    else:
+        abort(400)
