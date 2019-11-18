@@ -22,7 +22,7 @@ def question_listing():
     return jsonify({
         'succcess': True,
         'questions': paginated_questions,
-        'totalQuestions': len(questions),
+        'total_questions': len(questions),
         'categories': formated_categories,
         'current_category': 'null'
     }), 200
@@ -47,6 +47,9 @@ def delete_question(question_id):
 
 @app.route('/api/v1/questions', methods=['POST'])
 def create_question():
+    if not request.json:
+        abort(400)
+        
     question = request.json.get('question', None)
     answer = request.json.get('answer', None)
     category = request.json.get('category', None)

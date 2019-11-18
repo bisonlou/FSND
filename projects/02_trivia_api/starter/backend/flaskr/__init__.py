@@ -36,6 +36,7 @@ def after_request(response):
 
 import flaskr.controllers.question
 import flaskr.controllers.category
+import flaskr.controllers.error
 
 '''
   @TODO: 
