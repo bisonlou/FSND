@@ -1,5 +1,3 @@
-import flaskr.controllers.question
-import flaskr.controllers.category
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -17,17 +15,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-CORS(app, resources={r"/*": {"origins": "*"}})
-
 
 '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
-  '''
+'''
 @app.after_request
 def after_request(response):
         response.headers.add('Access-Control-Allow-Headers',
@@ -36,6 +32,10 @@ def after_request(response):
                              'GET,PUT,POST,DELETE,PATCH,OPTIONS')
         return response
 
+
+
+import flaskr.controllers.question
+import flaskr.controllers.category
 
 '''
   @TODO: 
