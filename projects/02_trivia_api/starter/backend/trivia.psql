@@ -37,7 +37,7 @@ ALTER TABLE public.alembic_version OWNER TO postgres;
 
 CREATE TABLE public.categories (
     id integer NOT NULL,
-    type character varying
+    type character varying NOT NULL
 );
 
 
@@ -71,10 +71,10 @@ ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 CREATE TABLE public.questions (
     id integer NOT NULL,
-    question character varying,
-    answer character varying,
+    question character varying NOT NULL,
+    answer character varying NOT NULL,
     category_id integer NOT NULL,
-    difficulty integer
+    difficulty integer NOT NULL
 );
 
 
@@ -121,7 +121,7 @@ ALTER TABLE ONLY public.questions ALTER COLUMN id SET DEFAULT nextval('public.qu
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-190466b56864
+fc533b9553be
 \.
 
 
@@ -144,10 +144,8 @@ COPY public.categories (id, type) FROM stdin;
 --
 
 COPY public.questions (id, question, answer, category_id, difficulty) FROM stdin;
-5	Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?	Maya Angelou	4	2
 9	What boxer's original name is Cassius Clay?	Muhammad Ali	4	1
 2	What movie earned Tom Hanks his third straight Oscar nomination, in 1996?	Apollo 13	5	4
-4	What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?	Tom Cruise	5	4
 6	What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?	Edward Scissorhands	5	3
 10	Which is the only team to play in every soccer World Cup tournament?	Brazil	6	3
 11	Which country won the first ever soccer World Cup in 1930?	Uruguay	6	4
@@ -165,6 +163,9 @@ COPY public.questions (id, question, answer, category_id, difficulty) FROM stdin
 23	Which dung beetle was worshipped by the ancient Egyptians?	Scarab	4	4
 25	Who am I	Bison	6	5
 26	Who was the first creation	Adam	4	1
+27	Who discovered the Nile	Sir John Speke	4	1
+28	What is the longest river	Nile	3	1
+29	What is the longest river	Nile	3	1
 \.
 
 
@@ -179,7 +180,7 @@ SELECT pg_catalog.setval('public.categories_id_seq', 6, true);
 -- Name: questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.questions_id_seq', 26, true);
+SELECT pg_catalog.setval('public.questions_id_seq', 29, true);
 
 
 --

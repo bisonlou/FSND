@@ -5,6 +5,10 @@ from flaskr.models.question import Question
 
 @app.route('/api/v1/categories')
 def category_listing():
+    """
+    Endpoint to list all categories
+    """
+
     categories = Category.query.all()
 
     return jsonify({
@@ -14,6 +18,11 @@ def category_listing():
 
 @app.route('/api/v1/categories/<int:category_id>/questions')
 def category_questions(category_id):
+    """
+    Endpoint that returns questions
+    belonging to a specified category
+    """
+    
     category_questions = Question.query.filter(Question.category_id==category_id).all()
 
     if not category_questions:

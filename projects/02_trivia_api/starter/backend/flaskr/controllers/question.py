@@ -10,6 +10,12 @@ from flaskr.models.category import Category
 
 @app.route('/api/v1/questions')
 def question_listing():
+    """
+    Endpoint for listing all questions
+    The questions will be paginated in groupings of 10
+    The endpoint also returns a list of all categories
+    """
+
     questions = Question.query.all()
     categories = Category.query.all()
 
@@ -29,6 +35,10 @@ def question_listing():
 
 @app.route('/api/v1/questions/<int:question_id>', methods=['DELETE'])
 def delete_question(question_id):
+    """
+    Endpoint for deleting a specified question
+    """
+
     question = Question.query.get(question_id)
 
     if not question:
@@ -46,6 +56,12 @@ def delete_question(question_id):
 
 @app.route('/api/v1/questions', methods=['POST'])
 def create_question():
+    """
+    Endpoint for adding a question.
+    The endpoint will instead seach for questions
+    if a searchTerm is specified int the request body
+    """
+
     if not request.json:
         abort(400)
 
@@ -63,8 +79,7 @@ def create_question():
 
         return jsonify({
             'questions': formated_questions,
-            'totalQuestions': len(questions),
-            'currentCategory': 'null'
+            'totalQuestions': len(questions)
         })
 
     if question and answer and category and difficulty:
@@ -90,6 +105,12 @@ def create_question():
 
 @app.route('/api/v1/quizzes', methods=['POST'])
 def quiz():
+    """
+    Endpoint for getting a random question from the provided category.
+    The endpoint will return a random question from a random category if
+    the type of 'ALL' is specified in the quiz_category dictionary
+    """
+
     previous_questions = request.json.get('previous_questions', None)
     quiz_category = request.json.get('quiz_category', None)
 
