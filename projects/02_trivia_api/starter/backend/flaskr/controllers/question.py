@@ -20,11 +20,10 @@ def question_listing():
     formated_categories = [category.format() for category in categories]
 
     return jsonify({
-        'succcess': True,
+        'success': True,
         'questions': paginated_questions,
         'total_questions': len(questions),
-        'categories': formated_categories,
-        'current_category': 'null'
+        'categories': formated_categories
     }), 200
 
 
@@ -33,7 +32,7 @@ def delete_question(question_id):
     question = Question.query.get(question_id)
 
     if not question:
-        return abort(404)
+        abort(404)
 
     try:
         question.delete()
@@ -42,14 +41,14 @@ def delete_question(question_id):
             'message': 'question successfuly deleted'
         }), 200
     except:
-        return abort(400)
+        abort(400)
 
 
 @app.route('/api/v1/questions', methods=['POST'])
 def create_question():
     if not request.json:
         abort(400)
-        
+
     question = request.json.get('question', None)
     answer = request.json.get('answer', None)
     category = request.json.get('category', None)
@@ -83,7 +82,7 @@ def create_question():
         return jsonify({
             'success': True,
             'message': 'question successfuly added'
-        })
+        }), 200
     except:
         print(sys.exc_info())
         abort(422)
@@ -95,10 +94,17 @@ def quiz():
     quiz_category = request.json.get('quiz_category', None)
 
     if previous_questions is not None and quiz_category is not None:
-        questions = Question.query.filter(and_(
-            Question.id.notin_(previous_questions),
-            Question.category_id == quiz_category['id']
-        )).all()
+        questions = []
+
+        if quiz_category['type'] == 'ALL':
+            questions = Question.query.filter(
+                Question.id.notin_(previous_questions)
+            ).all()
+        else:
+            questions = Question.query.filter(and_(
+                Question.id.notin_(previous_questions),
+                Question.category_id == quiz_category['id']
+            )).all()
 
         if len(questions) > 0:
             formated_questions = [question.format() for question in questions]
