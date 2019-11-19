@@ -20,4 +20,18 @@ def unprocessable(error):
     return jsonify({
         'success': False,
         'message': 'unable to process request'
-    })
+    }), 422
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+        'success': False,
+        'message': 'method not allowed'
+    }), 405
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({
+        'success': False,
+        'message': 'internal server error'
+    }), 500

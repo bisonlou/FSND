@@ -1,4 +1,4 @@
-from flaskr import db
+from flaskr.models import db
 
 '''
 Question

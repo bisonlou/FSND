@@ -20,11 +20,10 @@ def question_listing():
     formated_categories = [category.format() for category in categories]
 
     return jsonify({
-        'succcess': True,
+        'success': True,
         'questions': paginated_questions,
         'total_questions': len(questions),
-        'categories': formated_categories,
-        'current_category': 'null'
+        'categories': formated_categories
     }), 200
 
 
@@ -33,7 +32,7 @@ def delete_question(question_id):
     question = Question.query.get(question_id)
 
     if not question:
-        return abort(404)
+        abort(404)
 
     try:
         question.delete()
@@ -42,7 +41,7 @@ def delete_question(question_id):
             'message': 'question successfuly deleted'
         }), 200
     except:
-        return abort(400)
+        abort(400)
 
 
 @app.route('/api/v1/questions', methods=['POST'])
@@ -83,7 +82,7 @@ def create_question():
         return jsonify({
             'success': True,
             'message': 'question successfuly added'
-        })
+        }), 200
     except:
         print(sys.exc_info())
         abort(422)
