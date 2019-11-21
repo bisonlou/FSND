@@ -1,23 +1,33 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import '../stylesheets/Header.css';
 
-class Header extends Component {
+const Header = ({ onAddClick, onPlayClick }) => {
 
-  navTo(uri){
+  const navTo = (uri) => {
     window.location.href = window.location.origin + uri;
   }
 
-  render() {
     return (
-      <div className="App-header">
-        <h1 onClick={() => {this.navTo('')}}>Udacitrivia</h1>
-        <h2 onClick={() => {this.navTo('')}}>List</h2>
-        <h2 onClick={() => {this.navTo('/add')}}>Add</h2>
-        <h2 onClick={() => {this.navTo('/play')}}>Play</h2>
+      <div>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h5" >
+              <Button color="inherit" onClick={() => { this.navTo('/') }}>Udacitrivia</Button>
+            </Typography>
+            <Typography variant="h6" >
+              <Button color="inherit" onClick={onAddClick}>Add</Button>
+            </Typography>
+            <Typography variant="h6">
+              <Button color="inherit" onClick={onPlayClick}>Play</Button>
+            </Typography>
+          </Toolbar>
+        </AppBar>
       </div>
     );
-  }
 }
 
 export default Header;

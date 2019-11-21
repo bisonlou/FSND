@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { Paper, Button, Typography, IconButton } from '@material-ui/core';
+import Rating from '@material-ui/lab/Rating';
+import DeleteIcon from '@material-ui/icons/Delete';
 import '../stylesheets/Question.css';
 
 class Question extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
       visibleAnswer: false
@@ -10,28 +13,43 @@ class Question extends Component {
   }
 
   flipVisibility() {
-    this.setState({visibleAnswer: !this.state.visibleAnswer});
+    this.setState({ visibleAnswer: !this.state.visibleAnswer });
   }
 
   render() {
     const { question, answer, category, difficulty } = this.props;
     return (
-      <div className="Question-holder">
-        <div className="Question">{question}</div>
+      <Paper className="Question-holder">
+        <Typography className="Question">{question}</Typography>
         <div className="Question-status">
-          <img className="category" src={`${category[0].type}.svg`}/>
-          <div className="difficulty">Difficulty: {difficulty}</div>
-          <img src="delete.png" className="delete" onClick={() => this.props.questionAction('DELETE')}/>
-          
+          <img className="category" src={`${category[0].type}.svg`} />
+          <Rating
+            className="difficulty"
+            name="simple-controlled"
+            value={difficulty}
+            disabled
+          />
+          <IconButton
+            onClick={() => this.props.questionAction('DELETE')}
+          >
+            <DeleteIcon />
+          </IconButton>
         </div>
-        <div className="show-answer button"
-            onClick={() => this.flipVisibility()}>
-            {this.state.visibleAnswer ? 'Hide' : 'Show'} Answer
-          </div>
+        {!this.state.visibleAnswer && (
+          <Button
+            variant="contained"
+            color="primary"
+            className="show-answer button"
+            onClick={() => this.flipVisibility()}
+          >
+            Answer
+          </Button>
+        )}
+
         <div className="answer-holder">
-          <span style={{"visibility": this.state.visibleAnswer ? 'visible' : 'hidden'}}>Answer: {answer}</span>
+          <Typography style={{ "visibility": this.state.visibleAnswer ? 'visible' : 'hidden' }}>Answer: {answer}</Typography>
         </div>
-      </div>
+      </Paper>
     );
   }
 }

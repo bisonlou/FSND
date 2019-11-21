@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { Typography, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
 
 import '../stylesheets/App.css';
+import questionViewStyles from '../stylesheets/questionView'
 import Question from './Question';
+import Header from './Header'
 import Search from './Search';
+import FormView from './FormView'
+import QuizView from './QuizView'
 import $ from 'jquery';
 import { BASE_URL } from './utility'
 
 class QuestionView extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
       questions: [],
@@ -15,11 +21,31 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: [],
       currentCategory: null,
+      showAddForm: false,
+      showQuiz: false,
     }
   }
 
   componentDidMount() {
     this.getQuestions();
+  }
+
+  toggleShowAddForm = () => {
+    this.setState(({ showAddForm }) => (
+      {
+        showAddForm: !showAddForm,
+        showQuiz: false
+      }
+    ));
+  }
+
+  togglePlayQuiz = () => {
+    this.setState(({ showQuiz }) => (
+      {
+        showQuiz: !showQuiz,
+        showAddForm: false
+      }
+    ))
   }
 
   getQuestions = () => {
@@ -30,7 +56,8 @@ class QuestionView extends Component {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
-          categories: result.categories, })
+          categories: result.categories,
+        })
         return;
       },
       error: (error) => {
@@ -41,10 +68,10 @@ class QuestionView extends Component {
   }
 
   selectPage(num) {
-    this.setState({page: num}, () => this.getQuestions());
+    this.setState({ page: num }, () => this.getQuestions());
   }
 
-  createPagination(){
+  createPagination() {
     let pageNumbers = [];
     let maxPage = Math.ceil(this.state.totalQuestions / 10)
     for (let i = 1; i <= maxPage; i++) {
@@ -52,13 +79,13 @@ class QuestionView extends Component {
         <span
           key={i}
           className={`page-num ${i === this.state.page ? 'active' : ''}`}
-          onClick={() => {this.selectPage(i)}}>{i}
+          onClick={() => { this.selectPage(i) }}>{i}
         </span>)
     }
     return pageNumbers;
   }
 
-  getByCategory= (id) => {
+  getByCategory = (id) => {
     $.ajax({
       url: `${BASE_URL}/categories/${id}/questions`, //TODO: update request URL
       type: "GET",
@@ -66,7 +93,8 @@ class QuestionView extends Component {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
-          currentCategory: id })
+          currentCategory: id
+        })
         return;
       },
       error: (error) => {
@@ -82,7 +110,7 @@ class QuestionView extends Component {
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({searchTerm: searchTerm}),
+      data: JSON.stringify({ searchTerm: searchTerm }),
       xhrFields: {
         withCredentials: true
       },
@@ -90,7 +118,8 @@ class QuestionView extends Component {
       success: (result) => {
         this.setState({
           questions: result.questions,
-          totalQuestions: result.total_questions })
+          totalQuestions: result.total_questions
+        })
         return;
       },
       error: (error) => {
@@ -101,8 +130,8 @@ class QuestionView extends Component {
   }
 
   questionAction = (id) => (action) => {
-    if(action === 'DELETE') {
-      if(window.confirm('are you sure you want to delete the question?')) {
+    if (action === 'DELETE') {
+      if (window.confirm('are you sure you want to delete the question?')) {
         $.ajax({
           url: `${BASE_URL}/questions/${id}`, //TODO: update request URL
           type: "DELETE",
@@ -119,40 +148,65 @@ class QuestionView extends Component {
   }
 
   render() {
+    const { classes } = this.props;
+    const { showAddForm, showQuiz, categories } = this.state;
     return (
-      <div className="question-view">
-        <div className="categories-list">
-          <h2 onClick={() => {this.getQuestions()}}>Categories</h2>
-          <ul>
-            {this.state.categories.map(category => (
-              <li key={category.id} onClick={() => {this.getByCategory(category.id)}}>
-                {category.type}
-                <img className="category" src={`${category.type}.svg`}/>
-              </li>
-            ))}
-          </ul>
-          <Search submitSearch={this.submitSearch}/>
-        </div>
-        <div className="questions-list">
-          <h2>Questions</h2>
-          {this.state.questions.map(q => (
-            <Question
-              key={q.id}
-              question={q.question}
-              answer={q.answer}
-              category={this.state.categories.filter(cat => cat.id === q.category_id)} 
-              difficulty={q.difficulty}
-              questionAction={this.questionAction(q.id)}
-            />
-          ))}
-          <div className="pagination-menu">
-            {this.createPagination()}
-          </div>
-        </div>
+      <div>
+        <Header
+          onAddClick={this.toggleShowAddForm}
+          onPlayClick={this.togglePlayQuiz}
+        />
+        <div className="question-view">
+          <div>
+            <List
+              className={classes.categoryList}
+              component="nav">
+              {this.state.categories.map(category => (
+                <ListItem button onClick={() => this.getByCategory(category.id)}>
+                  <ListItemIcon>
+                    <img className="category" src={`${category.type}.svg`} />
+                  </ListItemIcon>
+                  <ListItemText primary={category.type} />
+                </ListItem>
+              ))}
+            </List>
 
-      </div>
+            <Search
+              submitSearch={this.submitSearch}
+              classes={classes}
+            />
+
+          </div>
+          <div className="questions-list">
+            <Typography variant="h4">Questions</Typography>
+            {this.state.questions.map(q => (
+              <Question
+                key={q.id}
+                question={q.question}
+                answer={q.answer}
+                category={this.state.categories.filter(cat => cat.id === q.category_id)}
+                difficulty={q.difficulty}
+                questionAction={this.questionAction(q.id)}
+              />
+            ))}
+            <div className="pagination-menu">
+              {this.createPagination()}
+            </div>
+          </div>
+          <FormView
+            open={showAddForm}
+            toggleShowAddForm={this.toggleShowAddForm}
+          />
+
+          <QuizView
+            open={showQuiz}
+            categories={categories}
+            toggleShowQuiz={this.togglePlayQuiz}
+          />
+        </div>
+      </div >
     );
   }
 }
 
-export default QuestionView;
+export default withStyles(questionViewStyles)(QuestionView);

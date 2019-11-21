@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import {
+  Paper, Typography, Grid, TextField, Modal,
+  FormControl, InputLabel, Select, Button, MenuItem, withStyles
+} from '@material-ui/core';
 import { BASE_URL } from './utility';
 import $ from 'jquery';
 
-import '../stylesheets/FormView.css';
+import '../stylesheets/formView.js';
+import formViewStyles from '../stylesheets/formView.js';
 
 class FormView extends Component {
   constructor(props) {
@@ -12,13 +17,14 @@ class FormView extends Component {
       answer: "",
       difficulty: 1,
       category: 1,
-      categories: []
+      categories: [],
+      isSubmitDisabled: true,
     }
   }
 
   componentDidMount() {
-    $.ajax({
-      url: `${BASE_URL}/categories`, //TODO: update request URL
+        $.ajax({
+      url: `${BASE_URL}/categories`,
       type: "GET",
       success: (result) => {
         this.setState({ categories: result.categories })
@@ -33,7 +39,6 @@ class FormView extends Component {
 
 
   submitQuestion = (event) => {
-    console.log(BASE_URL)
     event.preventDefault();
     $.ajax({
       url: `${BASE_URL}/questions`, //TODO: update request URL
@@ -51,7 +56,8 @@ class FormView extends Component {
       },
       crossDomain: true,
       success: (result) => {
-        document.getElementById("add-question-form").reset();
+        this.props.toggleShowAddForm()
+        this.setState({ answer: "", question: "", isSubmitDisabled: true})
         return;
       },
       error: (error) => {
@@ -62,47 +68,135 @@ class FormView extends Component {
   }
 
   handleChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value })
+    this.setState({ [event.target.name]: event.target.value }, () => this.activateSubimt())
+  }
+
+  activateSubimt = () => {
+    const { question, answer } = this.state;
+    if ( question !== "" && answer !== "") {
+      this.setState({ isSubmitDisabled: false })
+    } else {
+      this.setState({ isSubmitDisabled: true })
+    }
+  }
+
+  closeForm = () => {
+    this.props.toggleShowAddForm()
+    this.setState({ answer: "", question: "", isSubmitDisabled: true})
   }
 
   render() {
+    const { open, classes } = this.props;
+    const { difficulty, category, isSubmitDisabled } = this.state;
+
     return (
-      <div id="add-form">
-        <h2>Add a New Trivia Question</h2>
-        <form className="form-view" id="add-question-form" onSubmit={this.submitQuestion}>
-          <label>
-            Question
-            <input type="text" name="question" onChange={this.handleChange} />
-          </label>
-          <label>
-            Answer
-            <input type="text" name="answer" onChange={this.handleChange} />
-          </label>
-          <label>
-            Difficulty
-            <select name="difficulty" onChange={this.handleChange}>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-          </label>
-          <label>
-            Category
-            <select name="category" onChange={this.handleChange}>
-              {this.state.categories.map(category => {
-                return (
-                  <option key={category.id} value={category.id}>{category.type}</option>
-                )
-              })}
-            </select>
-          </label>
-          <input type="submit" className="button" value="Submit" />
-        </form>
-      </div>
+      <Modal
+        disableAutoFocus={true}
+        className={classes.popper}
+        open={open}
+      >
+        <Paper className={classes.modalContainer}>
+          <Typography variant="h6" className={classes.header}>Add a New Trivia Question</Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                className={classes.input}
+                label="Question"
+                name="question"
+                type="text"
+                onChange={this.handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                className={classes.input}
+                label="Answer"
+                type="text"
+                name="answer"
+                onChange={this.handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormControl
+                className={classes.difficulty}
+              >
+                <InputLabel id="demo-simple-select-label">Difficulty</InputLabel>
+                <Select
+                  name="difficulty"
+                  value={difficulty}
+                  onChange={this.handleChange}
+                >
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={2}>2</MenuItem>
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={4}>4</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormControl
+                className={classes.category}
+              >
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <Select
+                  name="category"
+                  value={category}
+                  onChange={this.handleChange}
+                >
+                  {this.state.categories.map(category => (
+                    <MenuItem value={category.id}>{category.type}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+              >
+                <Grid
+                  item
+                  xs={6}
+                >
+
+                </Grid>
+                <Grid
+                  item
+                  xs={6}
+                >
+                  <Button
+                    className={classes.cancelButton}
+                    variant="contained"
+                    color="default"
+                    onClick={this.closeForm}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    className={classes.submitButton}
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitDisabled}
+                    onClick={this.submitQuestion}
+                  >
+                    Add
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Paper >
+      </Modal>
     );
   }
 }
 
-export default FormView;
+export default withStyles(formViewStyles)(FormView);
