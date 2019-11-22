@@ -3,6 +3,8 @@
 Welcome to the Trivia Frontend. This is an interesting game based on pre-set questions and answers.
 To start please add your own questions and invite your friends to play the game. You may change the difficulty setting so as to get harder questions. You can also increase the number of questions you want to be asked.
 
+![Trivia](Capture.PNG)
+
 ## Getting Setup
 
 > _tip_: this frontend is designed to work with [Flask-based Backend](../backend). It is recommended you stand up the backend first, test using Postman or curl, update the endpoints in the frontend, and then the frontend should integrate smoothly.

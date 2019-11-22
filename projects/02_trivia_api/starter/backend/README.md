@@ -63,8 +63,8 @@ export URI_TEST='postgresql+psycopg2://<username>:<password>@localhost:5432/triv
 Then excecute:
 
 ```bash
-. .env
-python app.py
+source .env
+python app.py or py app.py
 ```
 
 ```bash
@@ -391,5 +391,7 @@ To run the tests, run
 ```bash
 dropdb trivia_test
 createdb trivia_test
-python test_flaskr.py
+source .env
+
+python test_flaskr.py or pytest
 ```
