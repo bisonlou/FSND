@@ -113,18 +113,22 @@ def quiz():
 
     previous_questions = request.json.get('previous_questions', None)
     quiz_category = request.json.get('quiz_category', None)
+    difficulty = request.json.get('difficulty', None)
 
     if previous_questions is not None and quiz_category is not None:
         questions = []
 
         if quiz_category['type'] == 'ALL':
-            questions = Question.query.filter(
-                Question.id.notin_(previous_questions)
+            questions = Question.query.filter(and_(
+                Question.id.notin_(previous_questions),
+                Question.difficulty <= difficulty
+            )
             ).all()
         else:
             questions = Question.query.filter(and_(
                 Question.id.notin_(previous_questions),
-                Question.category_id == quiz_category['id']
+                Question.category_id == quiz_category['id'],
+                Question.difficulty <= difficulty
             )).all()
 
         if len(questions) > 0:

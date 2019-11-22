@@ -3,7 +3,7 @@ import {
   Paper, Typography, Grid, TextField, Modal,
   FormControl, InputLabel, Select, Button, MenuItem, withStyles
 } from '@material-ui/core';
-import { BASE_URL } from './utility';
+import { BASE_URL } from '../utility';
 import $ from 'jquery';
 
 import '../stylesheets/formView.js';
@@ -41,7 +41,7 @@ class FormView extends Component {
   submitQuestion = (event) => {
     event.preventDefault();
     $.ajax({
-      url: `${BASE_URL}/questions`, //TODO: update request URL
+      url: `${BASE_URL}/questions`,
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
@@ -148,7 +148,12 @@ class FormView extends Component {
                   onChange={this.handleChange}
                 >
                   {this.state.categories.map(category => (
-                    <MenuItem value={category.id}>{category.type}</MenuItem>
+                    <MenuItem
+                      key={category.id}
+                      value={category.id}
+                    >
+                      {category.type}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

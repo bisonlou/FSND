@@ -1,17 +1,20 @@
-import { green } from "@material-ui/core/colors";
-import { ArrowRight } from "@material-ui/icons";
 
 const formViewStyles = {
   
   popper: {
     width: 600,
     padding: 30,
-    marginTop: 70,
-    marginLeft: 500,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 
   modalContainer: {
     outline: 'none',
+  },
+
+  slider: {
+    width: '70%',
+    marginLeft: 50,
   },
 
   header: {

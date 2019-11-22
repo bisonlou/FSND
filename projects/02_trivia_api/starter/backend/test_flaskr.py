@@ -175,7 +175,8 @@ class TriviaTestCase(unittest.TestCase):
 
         body = {
             'previous_questions': [],
-            'quiz_category': {'type': self.sports_category.type, 'id': self.sports_category.id}
+            'quiz_category': {'type': self.sports_category.type, 'id': self.sports_category.id},
+            'difficulty': 5
         }
         response = self.client().post(
             '/api/v1/quizzes',
@@ -198,7 +199,8 @@ class TriviaTestCase(unittest.TestCase):
 
         body = {
             'previous_questions': [self.sports_category.id],
-            'quiz_category': {'type': 'ALL', 'id': 0}
+            'quiz_category': {'type': 'ALL', 'id': 0},
+            'difficulty': 5
         }
         response = self.client().post(
             '/api/v1/quizzes',
@@ -221,7 +223,8 @@ class TriviaTestCase(unittest.TestCase):
         """
         body = {
             'previous_questions': [self.sports_category.id],
-            'quiz_category': {'type': self.sports_category.type, 'id': self.sports_category.id}
+            'quiz_category': {'type': self.sports_category.type, 'id': self.sports_category.id},
+            'difficulty': 5
         }
         response = self.client().post(
             '/api/v1/quizzes',

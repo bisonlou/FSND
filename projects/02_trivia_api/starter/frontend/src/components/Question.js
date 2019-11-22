@@ -22,7 +22,7 @@ class Question extends Component {
       <Paper className="Question-holder">
         <Typography className="Question">{question}</Typography>
         <div className="Question-status">
-          <img className="category" src={`${category[0].type}.svg`} />
+          <img className="category" alt="category" src={`${category[0].type}.svg`} />
           <Rating
             className="difficulty"
             name="simple-controlled"

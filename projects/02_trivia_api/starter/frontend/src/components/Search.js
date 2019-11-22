@@ -34,18 +34,15 @@ class Search extends Component {
           inputProps={{ 'aria-label': 'search questions' }}
           onChange={this.handleInputChange}
         />
-        <IconButton type="submit" className={classes.iconButton} aria-label="search">
-          <SearchIcon onClick={this.getInfo} />
+        <IconButton
+          type="submit"
+          className={classes.iconButton}
+          aria-label="search"
+          onClick={this.getInfo} 
+        >
+          <SearchIcon/>
         </IconButton>
       </Paper>
-      // <form onSubmit={this.getInfo}>
-      //   <input
-      //     placeholder="Search questions..."
-      //     ref={input => this.search = input}
-      //     onChange={this.handleInputChange}
-      //   />
-      //   <input type="submit" value="Submit" className="button"/>
-      // </form>
     )
   }
 }

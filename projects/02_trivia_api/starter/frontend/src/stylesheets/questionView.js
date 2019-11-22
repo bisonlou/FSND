@@ -1,7 +1,6 @@
 const questionViewStyles = {
     questionSearch: {
         padding: '2px 4px',
-        display: 'flex',
         alignItems: 'center',
         width: 300,
         display: 'inline-block',
@@ -19,9 +18,11 @@ const questionViewStyles = {
         margin: 4,
     },
     categoryList: {
+        paddingTop: '60px',
         marginRight: '20px',
         marginLeft: '30px',
-    }
+    },
+    
 };
 
 export default questionViewStyles;

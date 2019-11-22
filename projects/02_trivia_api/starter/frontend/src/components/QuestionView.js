@@ -10,7 +10,7 @@ import Search from './Search';
 import FormView from './FormView'
 import QuizView from './QuizView'
 import $ from 'jquery';
-import { BASE_URL } from './utility'
+import { BASE_URL } from '../utility'
 
 class QuestionView extends Component {
   constructor() {
@@ -37,6 +37,7 @@ class QuestionView extends Component {
         showQuiz: false
       }
     ));
+
   }
 
   togglePlayQuiz = () => {
@@ -149,7 +150,7 @@ class QuestionView extends Component {
 
   render() {
     const { classes } = this.props;
-    const { showAddForm, showQuiz, categories } = this.state;
+    const { showAddForm, showQuiz, categories, currentCategory } = this.state;
     return (
       <div>
         <Header
@@ -162,9 +163,14 @@ class QuestionView extends Component {
               className={classes.categoryList}
               component="nav">
               {this.state.categories.map(category => (
-                <ListItem button onClick={() => this.getByCategory(category.id)}>
+                <ListItem
+                  key={category.id}
+                  button
+                  selected={currentCategory === category.id}
+                  onClick={() => this.getByCategory(category.id)}
+                >
                   <ListItemIcon>
-                    <img className="category" src={`${category.type}.svg`} />
+                    <img className="category" alt="category" src={`${category.type}.svg`} />
                   </ListItemIcon>
                   <ListItemText primary={category.type} />
                 </ListItem>
@@ -179,6 +185,11 @@ class QuestionView extends Component {
           </div>
           <div className="questions-list">
             <Typography variant="h4">Questions</Typography>
+
+            <div className="pagination-menu">
+              {this.createPagination()}
+            </div>
+
             {this.state.questions.map(q => (
               <Question
                 key={q.id}
@@ -189,9 +200,7 @@ class QuestionView extends Component {
                 questionAction={this.questionAction(q.id)}
               />
             ))}
-            <div className="pagination-menu">
-              {this.createPagination()}
-            </div>
+           
           </div>
           <FormView
             open={showAddForm}

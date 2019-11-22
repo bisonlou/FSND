@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import {
   Paper, Typography, Grid, TextField, Modal, List,
-  ListItemIcon, ListItemText, Select, Button, ListItem, withStyles, IconButton
+  ListItemIcon, ListItemText, Button, ListItem, withStyles, Slider
 } from '@material-ui/core';
 import { DoneAll, ClearOutlined, DoneOutline } from '@material-ui/icons';
 import $ from 'jquery';
 
 import formViewStyles from '../stylesheets/formView';
-import { BASE_URL } from './utility';
+import { BASE_URL } from '../utility';
 
-const questionsPerPlay = 5;
+
 
 class QuizView extends Component {
   constructor(props) {
     super();
     this.state = {
       quizCategory: null,
+      difficulty: 3,
+      questionsPerPlay: 5,
       previousQuestions: [],
       showAnswer: false,
       numCorrect: 0,
@@ -24,6 +26,17 @@ class QuizView extends Component {
       forceEnd: false,
       isSubmitDisabled: true,
     }
+  }
+
+  handleSliderChange = (_, value) => {
+    this.setState({ difficulty: value });
+  }
+
+  handleQuestionNumberChange = ({ target: { value } }) => {
+    if (value < 5) value = 5;
+    if (value > 20) value = 20;
+    
+    this.setState({ questionsPerPlay: parseInt(value) });
   }
 
   selectCategory = ({ type, id = 0 }) => {
@@ -48,13 +61,14 @@ class QuizView extends Component {
     if (this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.id) }
 
     $.ajax({
-      url: `${BASE_URL}/quizzes`, //TODO: update request URL
+      url: `${BASE_URL}/quizzes`,
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
       data: JSON.stringify({
         previous_questions: previousQuestions,
-        quiz_category: this.state.quizCategory
+        quiz_category: this.state.quizCategory,
+        difficulty: this.state.difficulty,
       }),
       xhrFields: {
         withCredentials: true
@@ -79,7 +93,6 @@ class QuizView extends Component {
 
   submitGuess = (event) => {
     event.preventDefault();
-    const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase()
     let evaluate = this.evaluateAnswer()
     this.setState({
       numCorrect: !evaluate ? this.state.numCorrect : this.state.numCorrect + 1,
@@ -110,11 +123,12 @@ class QuizView extends Component {
       guess: '',
       forceEnd: false,
       isSubmitDisabled: true,
-     })
+    })
   }
 
   renderPrePlay() {
     const { open, classes, categories } = this.props;
+    const { questionsPerPlay } = this.state;
 
     return (
       <Modal
@@ -132,14 +146,55 @@ class QuizView extends Component {
               <ListItemText primary={"ALL"} />
             </ListItem>
             {categories.map(category => (
-              <ListItem button onClick={() => this.selectCategory(category)}>
+              <ListItem
+                key={category.id}
+                button
+                onClick={() => this.selectCategory(category)}
+              >
                 <ListItemIcon>
-                  <img className="category" src={`${category.type}.svg`} />
+                  <img className="category" alt="category" src={`${category.type}.svg`} />
                 </ListItemIcon>
                 <ListItemText primary={category.type} />
               </ListItem>
             ))}
           </List>
+
+          <Grid
+            container
+            spacing={3}
+            className={classes.slider}
+            justify="center"
+          >
+            <Grid item xs={12}>
+              <Typography id="discrete-slider-always" gutterBottom>
+                Difficulty
+              </Typography>
+              <Slider
+                defaultValue={3}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                step={1}
+                marks
+                min={1}
+                max={5}
+                onChangeCommitted={(event, value) => this.handleSliderChange(event, value)}
+              />
+            </Grid>
+
+            <grid item xs={12}>
+              <TextField
+                id="outlined-number"
+                label="Questions"
+                type="number"
+                inputProps={{ min: "5", max: "20", step: "1" }}
+                value={questionsPerPlay}
+                onChange={this.handleQuestionNumberChange}
+                margin="normal"
+                variant="outlined"
+              />
+            </grid>
+
+          </Grid>
         </Paper>
       </Modal>
     )
@@ -147,6 +202,8 @@ class QuizView extends Component {
 
   renderFinalScore() {
     const { open, classes } = this.props;
+    const { numCorrect, questionsPerPlay } = this.state;
+    const finalScore = (numCorrect * 100) / questionsPerPlay;
 
     return (
       <Modal
@@ -157,13 +214,14 @@ class QuizView extends Component {
         <Paper className={classes.modalContainer}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Typography variant="h6" className={classes.header}>Your Final Score is {this.state.numCorrect}</Typography>
+              <Typography variant="h6" className={classes.header}>Your Final Score is {finalScore}%</Typography>
             </Grid>
 
 
             <Grid item xs={12}>
               <Grid
                 container
+                spacing={2}
                 direction="row"
                 justify="flex-end"
                 alignItems="center"
@@ -262,7 +320,7 @@ class QuizView extends Component {
 
   renderPlay() {
     const { open, classes } = this.props;
-    const { isSubmitDisabled, forceEnd, previousQuestions, showAnswer, currentQuestion } = this.state;
+    const { questionsPerPlay, forceEnd, previousQuestions, showAnswer, currentQuestion } = this.state;
 
     return previousQuestions.length === questionsPerPlay || forceEnd
       ? this.renderFinalScore()
@@ -317,7 +375,6 @@ class QuizView extends Component {
                         className={classes.submitButton}
                         variant="contained"
                         color="primary"
-                        disabled={isSubmitDisabled}
                         onClick={this.submitGuess}
                       >
                         Guess
@@ -333,7 +390,8 @@ class QuizView extends Component {
 
 
   render() {
-    return this.state.quizCategory
+    const { quizCategory } = this.state;
+    return quizCategory
       ? this.renderPlay()
       : this.renderPrePlay()
   }
