@@ -50,7 +50,7 @@ def delete_question(question_id):
             'success': True,
             'message': 'question successfuly deleted'
         }), 200
-    except:
+    except BaseException:
         abort(400)
 
 
@@ -98,7 +98,7 @@ def create_question():
             'success': True,
             'message': 'question successfuly added'
         }), 200
-    except:
+    except BaseException:
         print(sys.exc_info())
         abort(422)
 

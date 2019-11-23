@@ -3,6 +3,7 @@ from flask import jsonify, abort
 from flaskr.models.category import Category
 from flaskr.models.question import Question
 
+
 @app.route('/api/v1/categories')
 def category_listing():
     """
@@ -16,14 +17,16 @@ def category_listing():
         'categories': [category.format() for category in categories]
     }), 200
 
+
 @app.route('/api/v1/categories/<int:category_id>/questions')
 def category_questions(category_id):
     """
     Endpoint that returns questions
     belonging to a specified category
     """
-    
-    category_questions = Question.query.filter(Question.category_id==category_id).all()
+
+    category_questions = Question.query.filter(
+        Question.category_id == category_id).all()
 
     if not category_questions:
         abort(404)

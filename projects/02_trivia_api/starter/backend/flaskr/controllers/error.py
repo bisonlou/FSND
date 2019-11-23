@@ -1,6 +1,7 @@
 from flaskr import app
 from flask import jsonify
 
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({
@@ -8,6 +9,7 @@ def not_found(error):
         'error': 404,
         'message': 'resource not found'
     }), 404
+
 
 @app.errorhandler(400)
 def bad_requests(error):
@@ -17,6 +19,7 @@ def bad_requests(error):
         'message': 'bad request'
     }), 400
 
+
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
@@ -25,6 +28,7 @@ def unprocessable(error):
         'message': 'unable to process request'
     }), 422
 
+
 @app.errorhandler(405)
 def method_not_allowed(error):
     return jsonify({
@@ -32,6 +36,7 @@ def method_not_allowed(error):
         'error': 405,
         'message': 'method not allowed'
     }), 405
+
 
 @app.errorhandler(500)
 def internal_error(error):
