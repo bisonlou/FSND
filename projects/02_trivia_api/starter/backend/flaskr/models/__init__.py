@@ -1,5 +1,3 @@
-import flaskr.models.category
-import flaskr.models.question
 from os import environ
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -22,3 +20,6 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
     migrate = Migrate(app, db)
+
+import flaskr.models.category
+import flaskr.models.question
